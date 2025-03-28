@@ -17,7 +17,6 @@ display: flex;
 justify-content: center;
 align-items: center;
 margin : 0 ;
-
 padding :10px;
 border-radius: 30px;
 background-color: lightgray;
@@ -44,3 +43,25 @@ font-size:13px;
 {
     background-color: lightgreen;
 }
+.A
+{
+text-align: center;
+margin-top: 10px;
+font-size: 30px;
+}
+.BigBox
+{
+margin:0;
+display: flex;
+justify-content: center;
+border: 20px;
+border-color: gray;
+}
+.box
+{
+width: 800px;
+height:800px;
+margin-top: 10px;
+background-color: blue;
+}
+
