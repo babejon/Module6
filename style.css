@@ -3,9 +3,9 @@ header {
     display: flex;
     justify-content: center;
     padding: 20px;
-    border-radius: 20px;
+    border-radius: 50px;
     background-color: lightblue;
-    box-sizing: border-box;
+    box-sizing:border-box;
 }
 
 h1 {
