@@ -12,14 +12,19 @@
     </header>
     <div class="boxheader">
         <a href="https://github.com/babejon/HITs/branches" class="button">A*</a>
-        <a href="#" class="button">Алгоритм кластеризации</a>
-        <a href="#" class="button">Генетический алгоритм</a>
-        <a href="#" class="button">Муравьиный алгоритм</a>
-        <a href="#" class="button">Дерево решений</a>
-        <a href="#" class="button">Нейронная сеть</a>
+            <a href="#" class="button">Алгоритм кластеризации</a>
+                <a href="#" class="button">Генетический алгоритм</a>
+                    <a href="#" class="button">Муравьиный алгоритм</a>
+                        <a href="#" class="button">Дерево решений</a>
+                            <a href="#" class="button">Нейронная сеть</a>
     </div>
     <div class="A">Алгоритм с картой</div>
     <div class="BigBox"><div class="box"></div></div>
+    <div style="font-size: 25px;">Введите размерность поля:</div>
+    <input class = "num" type="number" id="gridSize" min="1" placeholder="Введите число">
+    <button onclick="generateGrid()">Сгенерировать лабиринт</button>
+<button onclick="findPath()">Запустить алгоритм</button>
+    <div id="box" class="container"></div>
     <script src="script.js"></script>
 </body>
 </html>
