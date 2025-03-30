@@ -2,13 +2,15 @@ let start = null;
 let end = null;
 
 function generateGrid() {
-    const size = document.getElementById('gridSize').value;
-    const box = document.querySelector('.box'); 
-
-    box.innerHTML = ""; 
-    box.style.display = "grid"; 
+    const size = parseInt(document.getElementById('gridSize').value);
+    const box = document.querySelector('.box');
+    box.innerHTML = "";
+    box.style.display = "grid";
     box.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
     box.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+
+    start = null;
+    end = null;
 
     for (let i = 0; i < size * size; i++) {
         const cell = document.createElement("div");
