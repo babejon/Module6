@@ -24,10 +24,10 @@
     <section class="sidebar">
       <label for="gridSize">Введите размерность поля:</label>
       <input class="num" type="number" id="gridSize" min="2" max = "50" placeholder="Введите число от 2 до 50">
-      <button onclick="generateGrid()">Сгенерировать лабиринт</button>
-      <button onclick="aStar()">Запустить Алгоритм</button>
-      <button onclick="clearGrid()">Очистить поле</button>
-      <button onclick="GenerateRandomMaze()">Создать случайный Лабиринт</button>
+      <button class="sidebarbutton" onclick="generateGrid()">Сгенерировать лабиринт</button>
+      <button class="sidebarbutton" onclick="aStar()">Запустить алгоритм</button>
+      <button class="sidebarbutton" onclick="clearGrid()">Очистить поле</button>
+      <button class="sidebarbutton" onclick="GenerateRandomMaze()">Создать случайный лабиринт</button>
     </section>
   
     <section class="visualization">
@@ -37,7 +37,13 @@
  
     <section class="right-container">
       <h3>Описание</h3>
-      <p>Здесь будет текст с описанием алгоритма</p>
+      <p>О программе:</p>
+    <ol>
+      <li>Вы можете задать размер карты</li>
+      <li>Создать случайный лабиринт или сделать его сами (ПКМ-задать старт и финиш. ЛКМ-поставить стену)</li>
+      <li>Можете редактировать случайно созданный лабиринт по своему желанию</li>
+      <li>При необходимости очистите поле, нажав на соответствующую кнопку</li>
+    </ol>
     </section>
   </main>  
   <script src="script.js"></script>

@@ -45,6 +45,7 @@ h1 {
 
 .button:hover {
     background-color: lightgreen;
+    transform: translateY(-3px);
 }
 
 .A {
@@ -53,59 +54,6 @@ h1 {
     font-size: 30px;
     margin-bottom: 10px;
 }
-
-.BigBox {
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    border: none;
-}
-
-.box {
-    display: grid;
-    width: 800px;
-    height: 800px;
-    background-color: rgb(138, 219, 211);
-    border: 5px solid gray;
-    box-sizing: border-box;
-}
-
-.num
-{
-    margin-top: 10px;
-    display: inline;
-    border-color:aqua;
-    border-radius: 10px;
-}
-input[type = "number"]::-webkit-inner-spin-button,
-input[type = "number"]::-webkit-outer-spin-button{
-    -webkit-appearance: none;
-}
-.num:hover{
-background-color: aquamarine;
-}
-
-.cell {
-    border: 1px solid black;
-    background-color: rgb(138, 219, 211);
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-}
-
-.wall {
-    background-color: black;
-}
-
-.start {
-    background-color: green;
-}
-
-.end {
-    background-color: red;
-}
-
-
 
 .graph-container {
     width: 200px;
