@@ -14,21 +14,27 @@
 
   <nav class="boxheader">
     <a href="../../index.html" class="button">A*</a>
-    <a href="clustering-algorithm/index.html" class="button">Алгоритм кластеризации</a>
-    <a href="genetic-algorithm/index.html" class="button">Генетический алгоритм</a>
-    <a href="ant-algorithm/index.html" class="button">Муравьиный алгоритм</a>
-    <a href="decision-tree/index.html" class="button">Дерево решений</a>
-    <a href="neural-net/index.html" class="button">Нейронная сеть</a>
+    <a href="../clustering-algorithm/index.html" class="button">Алгоритм кластеризации</a>
+    <a href="../genetic-algorithm/index.html" class="button">Генетический алгоритм</a>
+    <a href="../ant-algorithm/index.html" class="button">Муравьиный алгоритм</a>
+    <a href="../decision-tree/index.html" class="button">Дерево решений</a>
+    <a href="../neural-net/index.html" class="button">Нейронная сеть</a>
   </nav>
 
   <section>
     <h2 class="A">Алгоритм кластеризации</h2>
 
+    <section class="sidebar">
+      <button class="sidebarbutton" onclick="startAlgo()">Запустить алгоритм</button>
+      <button class="sidebarbutton" onclick="clearGraph()">Очистить поле</button>
+      <p>Лучшая длина: <span id="bestLength">0</span></p>
+    </section>
+
     <svg id="graphArea" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <!-- Сетка -->
+       
       <defs>
-        <pattern id="grid" width="5" height="5" patternUnits="userSpaceOnUse">
-          <path d="M фт 0 L 0 0 0 5" fill="none" stroke="#ddd" stroke-width="1"/>
+        <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+          <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#ddd" stroke-width="1"/>
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill="url(#grid)"/> 

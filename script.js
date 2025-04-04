@@ -72,9 +72,9 @@ function clearPath() {
     });
 }
 
+= Array(size * size).fill(0).map(() => Array(size * size).fill(0));
 function getGraph(size, cells) {//делаем из карты граф в котором нули и единицы для реализации алгоритма
-    const graph = Array(size * size).fill(0).map(() => Array(size * size).fill(0));
-
+    const graph 
     for (let i = 0; i < size; ++i) {//если встречаем стену, то это 0 и по ней мы в дальнейшем не сможем двигаться
         for (let j = 0; j < size; ++j) {
             const index = i * size + j;

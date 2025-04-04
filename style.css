@@ -18,6 +18,7 @@ h1 {
     gap: 10px;
     padding: 10px;
     background-color: #f0f0f0;
+    border-radius: 10px;
 }
 
 .button {
@@ -54,13 +55,26 @@ h1 {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
+    gap: 15px;
+    border: 1px solid gray;
+    border-radius: 15px;
     padding: 10px;
     background-color: #f9f9f9;
 }
 
+.sidebarbutton
+{
+padding: 5px;
+border-radius: 10px;
+border-color: #41ac7c;
+transition: transform 0.2s ease;
+}
+
+.sidebarbutton:hover
+{
+background-color: lightgreen;
+transform: scale(1.04);
+}
 
 .visualization {
     flex: 2;
@@ -128,3 +142,5 @@ button:disabled,
     opacity:0.5;
     pointer-events: none;
 }
+
+

@@ -16,4 +16,3 @@
         svg.appendChild(point);
         console.log(`Клик: (${svgX}, ${svgY})`);
     });
-
