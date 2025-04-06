@@ -72,9 +72,9 @@ function clearPath() {
     });
 }
 
-= Array(size * size).fill(0).map(() => Array(size * size).fill(0));
+
 function getGraph(size, cells) {//делаем из карты граф в котором нули и единицы для реализации алгоритма
-    const graph 
+    const graph = Array(size * size).fill(0).map(() => Array(size * size).fill(0));
     for (let i = 0; i < size; ++i) {//если встречаем стену, то это 0 и по ней мы в дальнейшем не сможем двигаться
         for (let j = 0; j < size; ++j) {
             const index = i * size + j;
@@ -240,4 +240,11 @@ function GetRandInt(min, max) {// думаю тут и так все понят�
 function setButtonsDisabled(disabled) {//функция выключения кнопок при работающем алгоритме
     const buttons = document.querySelectorAll("button, .button");
     buttons.forEach(btn => btn.disabled = disabled);
+
+     const box = document.querySelector(".box");
+    if (disabled) {
+        box.classList.add("disabled");
+    } else {
+        box.classList.remove("disabled");
+    }
 }
