@@ -144,6 +144,7 @@ button:disabled,
     pointer-events: none;
 }
 
+
 .box.disabled {
     pointer-events: none;
     opacity: 0.9;
