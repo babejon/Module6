@@ -26,9 +26,13 @@
     <main class="main-wrapper">
 
       <section class="sidebar">
+        <label for="kValue">Количество кластеров (k):</label>
+        <input type="number" id="kValue" min="1" max="10" value="3" />
+      
         <button class="sidebarbutton" onclick="startAlgo()">Запустить алгоритм</button>
         <button class="sidebarbutton" onclick="clearGraph()">Очистить поле</button>
       </section>
+      
   
       
       <section class="graph-area">
