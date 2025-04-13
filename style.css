@@ -42,15 +42,6 @@ h1 {
     transform: translateY(-3px);
 }
 
-.left-container {
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
-    padding: 20px;
-    height: calc(100vh - 200px);
-    box-sizing: border-box;
-}
-
 .sidebar {
     flex: 1;
     display: flex;
@@ -101,6 +92,16 @@ transform: scale(1.04);
     padding: 10px;
     background-color: #f9f9f9;
 }
+
+.containers {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    padding: 20px;
+    height: calc(100vh - 200px);
+    box-sizing: border-box;
+}
+
 .box {
     display: grid;
     width: 500px;
