@@ -3,40 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Веб-приложение для работы с алгоритмами</title>
+  <title>Aлгоритмы приближенных вычислений</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <header>
-    <h1>Веб-приложение для работы с алгоритмами</h1>
+    <h1>Clustering-Algorithm</h1>
   </header>
-
-  <nav class="boxheader">
-    <a href="../../index.html" class="button">A*</a>
-    <a href="../clustering-algorithm/index.html" class="button">Алгоритм кластеризации</a>
-    <a href="../genetic-algorithm/index.html" class="button">Генетический алгоритм</a>
-    <a href="../ant-algorithm/index.html" class="button">Муравьиный алгоритм</a>
-    <a href="../decision-tree/index.html" class="button">Дерево решений</a>
-    <a href="../neural-net/index.html" class="button">Нейронная сеть</a>
-  </nav>
-
   <section>
 
-    <main class="main-wrapper">
-
+    <main class="containers">
       <section class="sidebar">
+        <h2>Работа алгоритма</h2>
         <label for="kValue">Количество кластеров (k):</label>
         <input type="number" id="kValue" min="1" max="10" value="3" />
       
         <button class="sidebarbutton" onclick="startAlgo()">Запустить алгоритм</button>
         <button class="sidebarbutton" onclick="clearGraph()">Очистить поле</button>
       </section>
-      
-  
-      
-      <section class="graph-area">
-        <h2 class="A">Алгоритм кластеризации</h2>
+      <section class="visualization">
         <svg id="graphArea" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
          
           <defs>
@@ -54,6 +40,18 @@
           <text x="185" y="190" class="axis-label">X</text>
           <text x="10" y="15" class="axis-label">Y</text>
         </svg>
+      </section>
+      <section class="right-container">
+        <nav class="navigation">
+          <h2>Навигация</h2>
+          <a href="../Main-page/index.html" class="button">Главная страница</a>
+          <a href="../A-Star-Algorithm/index.html" class="button">A*</a>
+          <a href="../clustering-algorithm/index.html" class="button">Алгоритм кластеризации</a>
+          <a href="../genetic-algorithm/index.html" class="button">Генетический алгоритм</a>
+          <a href="../ant-algorithm/index.html" class="button">Муравьиный алгоритм</a>
+          <a href="../decision-tree/index.html" class="button">Дерево решений</a>
+          <a href="../neural-net/index.html" class="button">Нейронная сеть</a>
+        </nav>
       </section>
   
     </main>

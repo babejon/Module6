@@ -59,7 +59,7 @@ function generatePopulation(size, numPoints) {//Создает массив ма
     return population;
 }
 
-function tournamentSelection(population, points, k = 5) {//Турнирный метод выбора "Родителя"
+function tournamentSelection(population, points, k = 3) {//Турнирный метод выбора "Родителя"
     let tournament = [];
     for (let i = 0; i < k; i++) {
         const randomIndex = Math.floor(Math.random() * population.length);
@@ -139,9 +139,9 @@ function drawPath(svg, points, path) {// рисует линии
 async function startAlgo() {
     let svg = document.getElementById("graphArea");
     let num = points.length;
-    let pop = generatePopulation(50, num);//создаем 50 популяций 
+    let pop = generatePopulation(30, num);//создаем 50 популяций 
 
-    for (let gen = 0; gen < 100; gen++) {//всего у нас новых генов 100
+    for (let gen = 0; gen < 60; gen++) {//всего у нас новых генов 100
         let newPop = [];
 
         const best = getBestPath(pop, points);

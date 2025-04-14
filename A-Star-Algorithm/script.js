@@ -10,7 +10,7 @@ function generateGrid() {//Функция для генерации ячеек
         alert("Введите корректное число")
         return;
     }
-    const box = document.querySelector('.box');
+    const box = document.querySelector('.visualization');
     box.innerHTML = "";
     box.style.display = "grid";
     box.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
@@ -110,6 +110,7 @@ async function aStar() {// Основаная работа алгоритма
 
     if (!start || !end) {
         alert("Пожалуйста, выберите начальную и конечную точки (ПКМ)");
+        setButtonsDisabled(false);
         return;
     }
 
@@ -190,9 +191,16 @@ const cells = document.querySelectorAll('.cell');
 cells.forEach(cell=>{
     cell.classList.remove('wall','start','end','path','visited','cell');
 });
-document.getElementById('gridSize').value = 0;
+document.getElementById('gridSize').value = null;
 start=null;
 end =null;
+}
+function buttonClearPath()// кнопка очистки пути
+{
+const cells = document.querySelectorAll('.cell');
+cells.forEach(cell=>{
+    cell.classList.remove('visited','path');
+});
 }
 
 function clearGirdForMaze()// функция очистки для того чтобы можно было много раз генерировать случайный лабиринт
@@ -241,7 +249,7 @@ function setButtonsDisabled(disabled) {//функция выключения к�
     const buttons = document.querySelectorAll("button, .button");
     buttons.forEach(btn => btn.disabled = disabled);
 
-     const box = document.querySelector(".box");
+     const box = document.querySelector(".visualization");
     if (disabled) {
         box.classList.add("disabled");
     } else {

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aлгоритмы приближенных вычислений</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>A-Star-Algorithm</h1>
+  </header>
+  <main class="containers">
+    <section class="sidebar">
+      <h2 for="gridSize">Введите размерность поля:</h2>
+      <input class="num" type="number" id="gridSize" min="2" max = "50" placeholder="Введите число от 2 до 50">
+      <button class="sidebarbutton" onclick="generateGrid()">Сгенерировать поле</button>
+      <button class="sidebarbutton" onclick="GenerateRandomMaze()">Создать случайный лабиринт</button>
+      <button class="sidebarbutton" onclick="aStar()">Запустить алгоритм</button>
+      <button class="sidebarbutton" onclick="buttonClearPath()">Очистить путь</button>
+      <button class="sidebarbutton" onclick="clearGrid()">Очистить поле</button>
+    </section>
+  
+    <section class="visualization">
+      <div id="box" class="box"></div>
+    </section>
+ 
+    <section class="right-container">
+      <nav class="navigation">
+        <h2>Навигация</h2>
+        <a href="../Main-page/index.html" class="button">Главная страница</a>
+        <a href="../A-Star-Algorithm/index.html" class="button">A*</a>
+        <a href="../clustering-algorithm/index.html" class="button">Кластеризация</a>
+        <a href="../genetic-algorithm/index.html" class="button">Генетический алгоритм</a>
+        <a href="../ant-algorithm/index.html" class="button">Муравьиный алгоритм</a>
+        <a href="../decision-tree/index.html" class="button">Дерево решений</a>
+        <a href="../neural-net/index.html" class="button">Нейронная сеть</a>
+      </nav>  
+    </section>
+  </main>  
+  
+  <script src="script.js"></script>
+</body>
+</html>
