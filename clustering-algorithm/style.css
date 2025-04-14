@@ -112,3 +112,25 @@ polyline#line {
   stroke-width: 2;
   fill: none;
 }
+
+.input-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 35px;
+  border: 1px solid #41ac7c;
+  border-radius: 8px;
+  font-size: 13px;
+  color: black;
+  background-color: #f0f0f0;
+  transition: all 0.2s ease;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.input-number:focus {
+  outline: none;
+  border-color: #2e8b5c;
+  box-shadow: 0 0 4px rgba(65, 172, 124, 0.6);
+}
