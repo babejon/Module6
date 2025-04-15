@@ -4,6 +4,7 @@ let points = [];
 let clusters = [];
 let k;
 let assignments = [];
+const Colors = ["#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231","#911eb4", "#46f0f0", "#f032e6", "#bcf60c", "#fabebe"];
 
 svg.addEventListener("click", (event) => {
   const rect = svg.getBoundingClientRect();
@@ -23,6 +24,7 @@ svg.addEventListener("click", (event) => {
   svg.appendChild(point);
 });
 
+
 function clearGraph() {
   points = [];
   clusters = [];
@@ -32,16 +34,13 @@ function clearGraph() {
   allPoints.forEach(el => el.remove());
 }
 
-function getRandomColor() {
-  return `hsl(${Math.random() * 360}, 100%, 50%)`;
-}
 
 function startAlgo() {
   const kInput = document.getElementById("kValue");
   k = parseInt(kInput.value);
 
-  if (isNaN(k) || k < 1) {
-    alert("Введите корректное значение k (от 1 и выше)");
+  if (isNaN(k) || k < 1 || k>10) {
+    alert("Введите корректное значение k (от 1 до 10)");
     return;
   }
 
@@ -59,7 +58,7 @@ function startAlgo() {
     clusters.push({
       x: shuffled[i].x,
       y: shuffled[i].y,
-      color: getRandomColor()
+      color: Colors[i]
     });
   }
 
@@ -68,7 +67,7 @@ function startAlgo() {
 
 
 // Шаги кластеризации
-function stepKMeans(iteration = 0) {
+function stepKMeans(iteration) {
   const maxIterations = 10;
 
   for (let iter = 0; iter < maxIterations; iter++) {
