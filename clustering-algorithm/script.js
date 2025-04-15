@@ -37,111 +37,81 @@ function getRandomColor() {
 }
 
 function startAlgo() {
-    const kInput = document.getElementById("kValue");
-    k = parseInt(kInput.value);
-  
-    if (isNaN(k) || k < 1) {
-      alert("Введите корректное значение k (от 1 и выше)");
-      return;
-    }
-  
-    if (points.length < k) {
-      alert("Недостаточно точек для кластеризации.");
-      return;
-    }
+  const kInput = document.getElementById("kValue");
+  k = parseInt(kInput.value);
 
-    clusters = [];
-    const usedIndices = new Set();
-    
-    //случайно выбираем первую точку
-    const firstIndex = Math.floor(Math.random() * points.length);
-    clusters.push({ ...points[firstIndex], color: getRandomColor() });
-    usedIndices.add(firstIndex);
-    
-    // выбираем оставшиеся точки по вероятностному распределению
-    while (clusters.length < k) {
-      const distances = points.map((p, i) => {
-        if (usedIndices.has(i)) return 0;
-        let minDist = Infinity;
-        clusters.forEach(c => {
-          const dist = Math.hypot(p.x - c.x, p.y - c.y);
-          if (dist < minDist) minDist = dist;
-        });
-        return minDist ** 2; // квадраты расстояний
-      });
-    
-      const sum = distances.reduce((acc, d) => acc + d, 0);
-      const probs = distances.map(d => d / sum);
-    
-      // Случайно выбираем следующую точку 
-      let r = Math.random();
-      let cumulative = 0;
-      let nextIndex = 0;
-      for (let i = 0; i < probs.length; i++) {
-        cumulative += probs[i];
-        if (r <= cumulative) {
-          nextIndex = i;
-          break;
-        }
-      }
-    
-      if (!usedIndices.has(nextIndex)) {
-        clusters.push({ ...points[nextIndex], color: getRandomColor() });
-        usedIndices.add(nextIndex);
-      }
-    }
-    
+  if (isNaN(k) || k < 1) {
+    alert("Введите корректное значение k (от 1 и выше)");
+    return;
+  }
 
+  if (points.length < k) {
+    alert("Недостаточно точек для кластеризации.");
+    return;
+  }
+
+  clusters = [];
   assignments = new Array(points.length).fill(-1);
+
+  // Случайно выбираем k разных точек в качестве начальных центров
+  const shuffled = [...points].sort(() => Math.random() - 0.5);
+  for (let i = 0; i < k; i++) {
+    clusters.push({
+      x: shuffled[i].x,
+      y: shuffled[i].y,
+      color: getRandomColor()
+    });
+  }
+
   stepKMeans(0);
 }
 
+
 // Шаги кластеризации
-function stepKMeans(iteration) {
-  if (iteration > 10) return;
+function stepKMeans(iteration = 0) {
+  const maxIterations = 10;
 
-  let changed = false;
+  for (let iter = 0; iter < maxIterations; iter++) {
+    let changed = false;
 
-  // Шаг 1: Назначаем точки ближайшему кластеру
-  const newAssignments = points.map(p => {
-    let minDist = Infinity;
-    let clusterIndex = 0;
-    clusters.forEach((c, i) => {
-      const dist = Math.hypot(p.x - c.x, p.y - c.y);
-      if (dist < minDist) {
-        minDist = dist;
-        clusterIndex = i;
-      }
+    // Шаг 1: Назначаем точки ближайшему кластеру
+    const newAssignments = points.map(p => {
+      let minDist = Infinity;
+      let clusterIndex = 0;
+      clusters.forEach((c, i) => {
+        const dist = Math.hypot(p.x - c.x, p.y - c.y);
+        if (dist < minDist) {
+          minDist = dist;
+          clusterIndex = i;
+        }
+      });
+      return clusterIndex;
     });
-    return clusterIndex;
-  });
 
-  // Проверка, были ли изменения
-  for (let i = 0; i < points.length; i++) {
-    if (assignments[i] !== newAssignments[i]) {
-      changed = true;
-      break;
+    // Проверка, были ли изменения
+    for (let i = 0; i < points.length; i++) {
+      if (assignments[i] !== newAssignments[i]) {
+        changed = true;
+        break;
+      }
     }
-  }
 
-  assignments = newAssignments;
+    assignments = newAssignments;
 
-  // Шаг 2: Пересчитываем центры кластеров
-  for (let i = 0; i < k; i++) {
-    const clusterPoints = points.filter((_, idx) => assignments[idx] === i);
-    if (clusterPoints.length === 0) continue;
-    const avgX = clusterPoints.reduce((sum, p) => sum + p.x, 0) / clusterPoints.length;
-    const avgY = clusterPoints.reduce((sum, p) => sum + p.y, 0) / clusterPoints.length;
-    clusters[i].x = avgX;
-    clusters[i].y = avgY;
+    // Шаг 2: Пересчитываем центры кластеров
+    for (let i = 0; i < k; i++) {
+      const clusterPoints = points.filter((_, idx) => assignments[idx] === i);
+      if (clusterPoints.length === 0) continue;
+      const avgX = clusterPoints.reduce((sum, p) => sum + p.x, 0) / clusterPoints.length;
+      const avgY = clusterPoints.reduce((sum, p) => sum + p.y, 0) / clusterPoints.length;
+      clusters[i].x = avgX;
+      clusters[i].y = avgY;
+    }
+
+    if (!changed) break;
   }
 
   drawClusters();
-
-  // Анимация: запускаем следующий шаг
-  if (changed) {
-    setTimeout(() => stepKMeans(iteration + 1), 500);
-  }
 }
 
 function drawClusters() {
