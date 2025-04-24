@@ -1,17 +1,14 @@
-// муравьиный алгоритм коммивояжера хз как работает но вроде ок
-// сделал Вася, 1 курс, ФКТИТ
-
 const svg = document.getElementById("graphArea");
 let cities = [];
 let bestPath = [];
 let pheromones = [];
 let bestLengthText = null;
-const alpha = 1; // вес феромона
-const beta = 5;  // вес расстояния
-const rho = 0.5; // испарение феромона
-const Q = 100;   // константа
-const antCount = 20; // сколько муравьёв
-const iterations = 100; // сколько раз бегать
+const alpha = 1;
+const beta = 5; 
+const rho = 0.5; 
+const Q = 100;   
+const antCount = 20;
+const iterations = 100; 
 
 
 svg.addEventListener("click", (e) => {
@@ -56,11 +53,11 @@ function drawGrayPath(path) {
 function distance(a, b) {
   const dx = a.x - b.x;
   const dy = a.y - b.y;
-  return Math.sqrt(dx * dx + dy * dy); // обычная формула
+  return Math.sqrt(dx * dx + dy * dy);
 }
 
 function initPheromones(n) {
-  pheromones = Array.from({ length: n }, () => Array(n).fill(1)); // стартуем с 1 феромоном везде
+  pheromones = Array.from({ length: n }, () => Array(n).fill(1)); 
 }
 
 function selectNextCity(current, visited, distances, pheromones) {
@@ -144,7 +141,6 @@ async function startAlgo() {
     }
   }
 
-  // выводим длину пути
   if (!bestLengthText) {
     bestLengthText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     bestLengthText.setAttribute("x", "10");
