@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Дерево решений</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Дерево решений</h1>
+    <p>
+      Введите обучающую выборку в формате CSV. Первая строка — заголовки признаков. Последняя колонка — целевая метка.<br>
+      После построения дерева вы можете ввести строку признаков (через запятую), чтобы классифицировать её и увидеть путь принятия решения.
+    </p>
+  </header>
+  <main class="containers">
+    <section class="sidebar">
+      <textarea class="num" id="csvInput" placeholder="Введите CSV сюда..."></textarea>
+      <button class="button" id="parseButton">Построить дерево</button>
+      <div id="output" class="output"></div>
+    </section>
+
+    <section class="visualization">
+      <div id="box" class="box"></div>
+    </section>
+
+    <section class="right-container">
+      <nav class="navigation">
+        <h2>Навигация</h2>
+        <a href="../Main-page/index.html" class="button">Главная</a>
+        <a href="../A-Star-Algorithm/index.html" class="button">A*</a>
+        <a href="../clustering-algorithm/index.html" class="button">Кластеризация</a>
+        <a href="../genetic-algorithm/index.html" class="button">Генетический алгоритм</a>
+        <a href="../ant-algorithm/index.html" class="button">Муравьиный алгоритм</a>
+        <a href="../decision-tree/index.html" class="button">Дерево решений</a>
+        <a href="../neural-net/index.html" class="button">Нейронная сеть</a>
+      </nav>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
