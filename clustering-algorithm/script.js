@@ -2,25 +2,27 @@ const svg = document.getElementById("graphArea");
 
 let points = [];
 let clusters = [];
-let k;
 let assignments = [];
+let k;
 
+const Colors = ["#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231","#911eb4", "#46f0f0", "#f032e6", "#bcf60c", "#fabebe"];
+
+//Обработка клика по SVG - добавление точки
 svg.addEventListener("click", (event) => {
   const rect = svg.getBoundingClientRect();
-  const clickX = event.clientX - rect.left;
-  const clickY = event.clientY - rect.top;
   const viewBox = svg.viewBox.baseVal;
-  const svgX = (clickX / rect.width) * viewBox.width;
-  const svgY = (clickY / rect.height) * viewBox.height;
 
-  points.push({ x: svgX, y: svgY });
+  const clickX = (event.clientX - rect.left) / rect.width * viewBox.width;
+  const clickY = (event.clientY - rect.top) / rect.height * viewBox.height;
 
-  const point = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  point.setAttribute("cx", svgX);
-  point.setAttribute("cy", svgY);
-  point.setAttribute("r", 3);
-  point.setAttribute("class", "point");
-  svg.appendChild(point);
+  points.push({ x: clickX, y: clickY });
+
+  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  circle.setAttribute("cx", clickX);
+  circle.setAttribute("cy", clickY);
+  circle.setAttribute("r", 3);
+  circle.setAttribute("class", "point");
+  svg.appendChild(circle);
 });
 
 function clearGraph() {
@@ -28,128 +30,120 @@ function clearGraph() {
   clusters = [];
   assignments = [];
 
-  const allPoints = svg.querySelectorAll("circle");
-  allPoints.forEach(el => el.remove());
+  svg.querySelectorAll("circle").forEach(el => el.remove());
 }
 
-function getRandomColor() {
-  return `hsl(${Math.random() * 360}, 100%, 50%)`;
-}
-
+//Запуск алгоритма
 function startAlgo() {
-    const kInput = document.getElementById("kValue");
-    k = parseInt(kInput.value);
-  
-    if (isNaN(k) || k < 1) {
-      alert("Введите корректное значение k (от 1 и выше)");
-      return;
-    }
-  
-    if (points.length < k) {
-      alert("Недостаточно точек для кластеризации.");
-      return;
-    }
+  const kInput = document.getElementById("kValue");
+  k = parseInt(kInput.value);
 
-    clusters = [];
-    const usedIndices = new Set();
-    
-    //случайно выбираем первую точку
-    const firstIndex = Math.floor(Math.random() * points.length);
-    clusters.push({ ...points[firstIndex], color: getRandomColor() });
-    usedIndices.add(firstIndex);
-    
-    // выбираем оставшиеся точки по вероятностному распределению
-    while (clusters.length < k) {
-      const distances = points.map((p, i) => {
-        if (usedIndices.has(i)) return 0;
-        let minDist = Infinity;
-        clusters.forEach(c => {
-          const dist = Math.hypot(p.x - c.x, p.y - c.y);
-          if (dist < minDist) minDist = dist;
-        });
-        return minDist ** 2; // квадраты расстояний
-      });
-    
-      const sum = distances.reduce((acc, d) => acc + d, 0);
-      const probs = distances.map(d => d / sum);
-    
-      // Случайно выбираем следующую точку 
-      let r = Math.random();
-      let cumulative = 0;
-      let nextIndex = 0;
-      for (let i = 0; i < probs.length; i++) {
-        cumulative += probs[i];
-        if (r <= cumulative) {
-          nextIndex = i;
-          break;
-        }
-      }
-    
-      if (!usedIndices.has(nextIndex)) {
-        clusters.push({ ...points[nextIndex], color: getRandomColor() });
-        usedIndices.add(nextIndex);
-      }
-    }
-    
-
-  assignments = new Array(points.length).fill(-1);
-  stepKMeans(0);
-}
-
-// Шаги кластеризации
-function stepKMeans(iteration) {
-  if (iteration > 10) return;
-
-  let changed = false;
-
-  // Шаг 1: Назначаем точки ближайшему кластеру
-  const newAssignments = points.map(p => {
-    let minDist = Infinity;
-    let clusterIndex = 0;
-    clusters.forEach((c, i) => {
-      const dist = Math.hypot(p.x - c.x, p.y - c.y);
-      if (dist < minDist) {
-        minDist = dist;
-        clusterIndex = i;
-      }
-    });
-    return clusterIndex;
-  });
-
-  // Проверка, были ли изменения
-  for (let i = 0; i < points.length; i++) {
-    if (assignments[i] !== newAssignments[i]) {
-      changed = true;
-      break;
-    }
+  if (isNaN(k) || k < 1 || k > 10) {
+    alert("Введите корректное значение k (от 1 до 10)");
+    return;
   }
 
-  assignments = newAssignments;
+  if (points.length < k) {
+    alert("Недостаточно точек для кластеризации.");
+    return;
+  }
 
-  // Шаг 2: Пересчитываем центры кластеров
-  for (let i = 0; i < k; i++) {
-    const clusterPoints = points.filter((_, idx) => assignments[idx] === i);
-    if (clusterPoints.length === 0) continue;
-    const avgX = clusterPoints.reduce((sum, p) => sum + p.x, 0) / clusterPoints.length;
-    const avgY = clusterPoints.reduce((sum, p) => sum + p.y, 0) / clusterPoints.length;
-    clusters[i].x = avgX;
-    clusters[i].y = avgY;
+  assignments = new Array(points.length).fill(-1);
+  clusters = initializeKMeansPlusPlus(points, k).map((c, i) => ({
+    x: c.x,
+    y: c.y,
+    color: Colors[i]
+  }));
+
+  stepKMeans();
+}
+
+//Инициализация K-Means++ 
+function initializeKMeansPlusPlus(points, k) {
+  const centroids = [];
+
+  const first = points[0];
+  centroids.push({ x: first.x, y: first.y });
+
+  while (centroids.length < k) {
+    const distances = points.map(p => {
+      let minDist = Infinity;
+      centroids.forEach(c => {
+        const dist = Math.hypot(p.x - c.x, p.y - c.y);
+        minDist = Math.min(minDist, dist);
+      });
+      return minDist ** 2;
+    });
+
+    const total = distances.reduce((sum, d) => sum + d, 0);
+    let r = Math.random() * total;
+    let index = 0;
+
+    while (r > distances[index]) {
+      r -= distances[index];
+      index++;
+    }
+
+    centroids.push({ x: points[index].x, y: points[index].y });
+  }
+
+  return centroids;
+}
+
+//Основной цикл кластеризации 
+function stepKMeans() {
+  const maxIterations = 10;
+
+  for (let iter = 0; iter < maxIterations; iter++) {
+    let changed = false;
+
+    const newAssignments = points.map(p => {
+      let minDist = Infinity;
+      let clusterIndex = 0;
+
+      clusters.forEach((c, i) => {
+        const dist = Math.hypot(p.x - c.x, p.y - c.y);
+        if (dist < minDist) {
+          minDist = dist;
+          clusterIndex = i;
+        }
+      });
+
+      return clusterIndex;
+    });
+
+    for (let i = 0; i < points.length; i++) {
+      if (assignments[i] !== newAssignments[i]) {
+        changed = true;
+        break;
+      }
+    }
+
+    assignments = newAssignments;
+
+    // Пересчёт центров кластеров
+    for (let i = 0; i < k; i++) {
+      const clusterPoints = points.filter((_, idx) => assignments[idx] === i);
+      if (clusterPoints.length === 0) continue;
+
+      const avgX = clusterPoints.reduce((sum, p) => sum + p.x, 0) / clusterPoints.length;
+      const avgY = clusterPoints.reduce((sum, p) => sum + p.y, 0) / clusterPoints.length;
+
+      clusters[i].x = avgX;
+      clusters[i].y = avgY;
+    }
+
+    if (!changed) break;
   }
 
   drawClusters();
-
-  // Анимация: запускаем следующий шаг
-  if (changed) {
-    setTimeout(() => stepKMeans(iteration + 1), 500);
-  }
 }
 
+//Отрисовка кластеров и точек 
 function drawClusters() {
-  // Удаление всех кругов
-  const allCircles = svg.querySelectorAll("circle");
-  allCircles.forEach(c => c.remove());
+  svg.querySelectorAll("circle").forEach(c => c.remove());
 
-  // точки
+  // Точки
   points.forEach((p, i) => {
     const c = clusters[assignments[i]];
     const point = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -161,7 +155,7 @@ function drawClusters() {
     svg.appendChild(point);
   });
 
-  // центры кластеров
+  // Центры кластеров
   clusters.forEach(c => {
     const center = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     center.setAttribute("cx", c.x);
