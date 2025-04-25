@@ -123,15 +123,15 @@ async function startAlgo() {
         newPop.push(best);
 
         for (let i = 0; i < pop.length; i++) {
-            let p1 = tournamentSelection(pop, points, 5);
-            let p2 = tournamentSelection(pop, points, 5);
-            let child = crossover(p1, p2);
-            child = mutate(child);
-            newPop.push(child);
+            let p1 = tournamentSelection(pop, points, 5);//выбираем 5 маршрутов из них лучший 
+            let p2 = tournamentSelection(pop, points, 5);//так же и тут
+            let child = crossover(p1, p2);//делаем из родителей ребенка 
+            child = mutate(child);//мутируем его
+            newPop.push(child);//пушим в новую популяцию
         }
 
-        pop = newPop;
-        let currentBest = getBestPath(pop, points);
+        pop = newPop;//замена старого поколения новым 
+        let currentBest = getBestPath(pop, points);//лучший маршрут из новго поколения
         drawPath(svg, points, currentBest);
 
         let length = fitnessCalculator(currentBest, points);
