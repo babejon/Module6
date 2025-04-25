@@ -64,7 +64,7 @@ function shuffle(array) {//Функция которя используется 
     }
 }
 
-function tournamentSelection(population, points, k = 3) {//Турнирный метод выбора "Родителя"
+function tournamentSelection(population, points, k) {//Турнирный метод выбора "Родителя"
     let tournament = [];
     for (let i = 0; i < k; i++) {
         const randomIndex = Math.floor(Math.random() * population.length);
@@ -131,7 +131,7 @@ async function startAlgo() {
         }
 
         pop = newPop;//замена старого поколения новым 
-        let currentBest = getBestPath(pop, points);//лучший маршрут из новго поколения
+        let currentBest = getBestPath(pop, points);//лучший маршрут из нового поколения 
         drawPath(svg, points, currentBest);
 
         let length = fitnessCalculator(currentBest, points);
