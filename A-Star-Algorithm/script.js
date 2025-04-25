@@ -2,8 +2,6 @@ let start = null;
 let end = null;
 
 function generateGrid() {//Функция для генерации ячеек
-    
-
     const size = parseInt(document.getElementById('gridSize').value);//проверка на размер карты 
     if (size<2||size>50)
     {
@@ -81,13 +79,13 @@ function getGraph(size, cells) {//делаем из карты граф в ко�
             if (cells[index].classList.contains("wall")) continue;
 
             const neighbors = [
-                [i - 1, j], [i + 1, j], [i, j - 1], [i, j + 1]
+                [i - 1, j], [i + 1, j], [i, j - 1], [i, j + 1]//направления движения верх вниз лево право
             ];
 
             for (const [ni, nj] of neighbors) {
                 if (ni >= 0 && ni < size && nj >= 0 && nj < size) {
                     const neighborIndex = ni * size + nj;
-                    if (!cells[neighborIndex].classList.contains("wall")) {
+                    if (!cells[neighborIndex].classList.contains("wall")) {//если сосед не стена ставим 1
                         graph[index][neighborIndex] = 1;
                     }
                 }
@@ -121,10 +119,10 @@ async function aStar() {// Основаная работа алгоритма
     const startIndex = Array.from(cells).indexOf(start);
     const endIndex = Array.from(cells).indexOf(end);
 
-    const openSet = [startIndex];
-    const cameFrom = Array(size * size).fill(null);
-    const gScore = Array(size * size).fill(Infinity);
-    const fScore = Array(size * size).fill(Infinity);
+    const openSet = [startIndex];//список того что нужно проверить, начинаем со старта
+    const cameFrom = Array(size * size).fill(null);//откуда пришел
+    const gScore = Array(size * size).fill(Infinity);//стоимость пути от старта до текущей ячейки 
+    const fScore = Array(size * size).fill(Infinity);//Ожидаемая лучшая стоимость от начала до конца
 
     gScore[startIndex] = 0;//счетчик кратчайшего пути
     fScore[startIndex] = heuristic(startIndex, endIndex, size);//счетчик лучших путей до конца
@@ -138,7 +136,7 @@ async function aStar() {// Основаная работа алгоритма
             for (let i = 0; i < path.length; i++) {
                 if (cells[path[i]] !== start && cells[path[i]] !== end) {
                     cells[path[i]].classList.add("path");
-                    await new Promise(r => setTimeout(r, 100));
+                    await new Promise(r => setTimeout(r, 100));//задержка 100мс 
                 }
             }
             setButtonsDisabled(false);
@@ -156,10 +154,10 @@ async function aStar() {// Основаная работа алгоритма
             if (graph[current][neighbor] === 1) {//Если нашел, то добавляем в gScore. А если еще не рассматривали эту клетку то, добавляем на рассмотрение
                 const tentativeG = gScore[current] + 1;
                 if (tentativeG < gScore[neighbor]) {
-                    cameFrom[neighbor] = current;
-                    gScore[neighbor] = tentativeG;
-                    fScore[neighbor] = tentativeG + heuristic(neighbor, endIndex, size);
-                    if (!openSet.includes(neighbor)) {
+                    cameFrom[neighbor] = current;//запоминаем от куда пришли, для восстановления пути
+                    gScore[neighbor] = tentativeG;//стоимость для того чтобы добраться до соседа
+                    fScore[neighbor] = tentativeG + heuristic(neighbor, endIndex, size);//ожидаемая полная стоимость до соседа 
+                    if (!openSet.includes(neighbor)) {//добавляем соседа в очередь на рассмотрение в след шаге
                         openSet.push(neighbor);
                     }
                 }
@@ -171,7 +169,7 @@ async function aStar() {// Основаная работа алгоритма
     setButtonsDisabled(false);// не забываем врубить обратно
 }
 
-function restorePath(cameFrom, start, end) {//восстанавливаем путь
+function restorePath(cameFrom, start, end) {//восстанавливаем путь от конца к началу, потом разворачиваем
     const path = [];
     let current = end;
     while (current !== null && current !== start) {
@@ -187,20 +185,20 @@ function restorePath(cameFrom, start, end) {//восстанавливаем п�
 
 function clearGrid()// кнопка очистки поля
 {
-const cells = document.querySelectorAll('.cell');
-cells.forEach(cell=>{
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach(cell=>{
     cell.classList.remove('wall','start','end','path','visited','cell');
 });
-document.getElementById('gridSize').value = null;
-start=null;
-end =null;
+    document.getElementById('gridSize').value = null;
+    start=null;
+    end =null;
 }
 function buttonClearPath()// кнопка очистки пути
 {
-const cells = document.querySelectorAll('.cell');
-cells.forEach(cell=>{
-    cell.classList.remove('visited','path');
-});
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach(cell=>{
+        cell.classList.remove('visited','path');
+    });
 }
 
 function clearGirdForMaze()// функция очистки для того чтобы можно было много раз генерировать случайный лабиринт
@@ -231,7 +229,7 @@ function GenerateRandomMaze() {// генерация лабиринта
     start.classList.add("start"); 
     end.classList.add("end"); 
 
-    for (let i = 0; i < size * size * 0.4; i++) { 
+    for (let i = 0; i < size * size * 0.4; i++) { //40% карты в стенах
         let randIndex;
         do {
             randIndex = GetRandInt(0, size * size - 1);
@@ -249,10 +247,10 @@ function setButtonsDisabled(disabled) {//функция выключения к�
     const buttons = document.querySelectorAll("button, .button");
     buttons.forEach(btn => btn.disabled = disabled);
 
-     const box = document.querySelector(".visualization");
+     const visualization = document.querySelector(".visualization");
     if (disabled) {
-        box.classList.add("disabled");
+        visualization.classList.add("disabled");
     } else {
-        box.classList.remove("disabled");
+        visualization.classList.remove("disabled");
     }
 }
