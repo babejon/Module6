@@ -115,13 +115,16 @@ async function startAlgo() {
       currentPath.push(currentPath[0]); // Замыкаем маршрут
 
       // Считаем длину маршрута
-      const pathLength = currentPath.reduce((total, _, index) =>//Пока не дошли до последнего города, берём расстояние между текущим и следующим городом
-        index < currentPath.length - 1 ? total + distanceMatrix[currentPath[index]][currentPath[index + 1]] : total, 0);
-
+      let pathLength = 0;
+      for (let index = 0; index < currentPath.length - 1; index++) {
+        const fromCity = currentPath[index];
+        const toCity = currentPath[index + 1];
+        pathLength += distanceMatrix[fromCity][toCity];
+      }
       // Обновляем лучший маршрут
-      if (pathLength < bestRouteLength) {
-        bestRouteLength = pathLength;
-        optimalRoute = currentPath.slice();
+      if (pathLength < bestRouteLength) {//короче ли текущий путь чем то что был лучшим до этого
+        bestRouteLength = pathLength;//обновляем
+        optimalRoute = currentPath.slice();//копируем текущий марщрут
       }
 
       allPaths.push(currentPath); // Сохраняем маршрут муравья
