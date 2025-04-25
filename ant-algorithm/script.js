@@ -1,19 +1,8 @@
 const svg = document.getElementById("graphArea");
-let cities = [];
-let bestPath = [];
-let pheromones = [];
-let bestLengthText = null;
-const alpha = 1;
-const beta = 5; 
-const rho = 0.5; 
-const Q = 100;   
-const antCount = 20;
-const iterations = 100; 
-
 
 svg.addEventListener("click", (e) => {
   const rect = svg.getBoundingClientRect();
-  const x = ((e.clientX - rect.left) / rect.width) * 200;
+  const x = ((e.clientX - rect.left) / rect.width) * 200; 
   const y = ((e.clientY - rect.top) / rect.height) * 200;
   cities.push({ x, y });
   drawPoint(x, y);
@@ -30,12 +19,11 @@ function drawPoint(x, y) {
 
 function drawPath(path) {
   const polyline = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-  const points = path.map(i => `${cities[i].x},${cities[i].y}`).join(" ") + ` ${cities[path[0]].x},${cities[path[0]].y}`;
+  const points = path.map(i => `${cities[i].x},${cities[i].y}`).join(" ") + ` ${cities[path[0]].x},${cities[path[0]].y}`; // Замыкаем маршрут
   polyline.setAttribute("points", points);
   polyline.setAttribute("stroke", "red");
   polyline.setAttribute("stroke-width", "2");
   polyline.setAttribute("fill", "none");
-  polyline.setAttribute("id", "line");
   svg.appendChild(polyline);
 }
 
@@ -50,106 +38,121 @@ function drawGrayPath(path) {
   svg.appendChild(polyline);
 }
 
-function distance(a, b) {
-  const dx = a.x - b.x;
-  const dy = a.y - b.y;
-  return Math.sqrt(dx * dx + dy * dy);
+let cities = []; // Храним координаты городов
+let optimalRoute = []; // Лучший найденный маршрут
+let pheromoneMap = []; // Матрица феромонов
+let routeLengthDisplay = null; 
+
+const pheromoneInfluence = 1; // Влияние феромонов 
+const distanceInfluence = 5;  // Влияние расстояния 
+const evaporationRate = 0.5;  // Испарение феромонов 
+const antPheromone = 100;     // Феромоны муравья
+const numberOfAnts = 20;      // Количество муравьев в каждой итерации
+const maxIterations = 100;    // Максимальное количество итераций алгоритма
+
+function distance(a, b) {//Растояние между городами
+  return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
 }
 
-function initPheromones(n) {
-  pheromones = Array.from({ length: n }, () => Array(n).fill(1)); 
+// Матрица феромонов изначально она заполнена единицами
+function initPheromoneMap(cityCount) {
+  pheromoneMap = Array.from({ length: cityCount }, () => Array(cityCount).fill(1));
 }
 
+// Выбираем следующий город для муравья
 function selectNextCity(current, visited, distances, pheromones) {
-  const probabilities = cities.map((_, j) => {
-    if (visited.has(j)) return 0;
-    const tau = pheromones[current][j] ** alpha;
-    const eta = (1 / distances[current][j]) ** beta;
-    return tau * eta;
+  const probabilities = cities.map((_, cityIndex) => {
+    if (visited.has(cityIndex)) return 0; // Уже посещённые города исключаем
+    const pheromoneLevel = pheromones[current][cityIndex] ** pheromoneInfluence; // Влияние феромонов
+    const heuristic = (1 / distances[current][cityIndex]) ** distanceInfluence; // Влияние расстояния 
+    return pheromoneLevel * heuristic; // Комбинируем феромоны и расстояние
   });
 
-  const sum = probabilities.reduce((a, b) => a + b, 0);
-  const rand = Math.random() * sum;
-  let total = 0;
+  const totalProbability = probabilities.reduce((sum, prob) => sum + prob, 0); //Суммируем общий вес
+  const randomThreshold = Math.random() * totalProbability;//Генерим рандомный порог чтобы выбрать город
+  let cumulativeProbability = 0;
 
-  for (let i = 0; i < probabilities.length; i++) {
-    total += probabilities[i];
-    if (rand <= total) return i;
+  // Рулетка выбора следующего города
+  for (let cityIndex = 0; cityIndex < probabilities.length; cityIndex++) {
+    cumulativeProbability += probabilities[cityIndex];//Накапливаем Вероятность
+    if (randomThreshold <= cumulativeProbability) return cityIndex;//Вероятность Достигла необходимого- отправили значение
   }
   return 0; 
 }
 
+// Основной запуск алгоритма муравьиной колонии
 async function startAlgo() {
-  if (cities.length < 2) return alert("Добавь хотя бы два города, чёрт!");
-  const n = cities.length;
-  const distances = Array.from({ length: n }, (_, i) =>
-    cities.map((_, j) => distance(cities[i], cities[j])));
-  initPheromones(n);
-  let bestLength = Infinity;
+  if (cities.length < 2) return alert("Добавь хотя бы два города"); // Проверяем количество городов
+  const cityCount = cities.length;
+  const distanceMatrix = Array.from({ length: cityCount }, (_, fromCity) =>
+    cities.map((_, toCity) => distance(cities[fromCity], cities[toCity]))
+  ); // Заполняем матрицу расстояний
 
-  for (let iter = 0; iter < iterations; iter++) {
-    const paths = [];
-    const lengths = [];
+  initPheromoneMap(cityCount); // Инициализируем феромоны
+  let bestRouteLength = Infinity; // Стартовое значение для лучшего маршрута
 
-    for (let ant = 0; ant < antCount; ant++) {
-      const visited = new Set();
-      const path = [];
-      let current = Math.floor(Math.random() * n);
-      path.push(current);
-      visited.add(current);
+  for (let iteration = 0; iteration < maxIterations; iteration++) { // Основной цикл итераций
+    const allPaths = []; // Все маршруты текущей итерации
+    const allPathLengths = []; // Длины этих маршрутов
 
-      while (visited.size < n) {
-        const next = selectNextCity(current, visited, distances, pheromones);
-        path.push(next);
-        visited.add(next);
-        current = next;
+    // Запускаем каждого муравья
+    for (let ant = 0; ant < numberOfAnts; ant++) {
+      const visitedCities = new Set();
+      const currentPath = [];
+      let currentCity = Math.floor(Math.random() * cityCount); // Случайный стартовый город
+
+      currentPath.push(currentCity);
+      visitedCities.add(currentCity);
+
+      // Пока не обошли все города
+      while (visitedCities.size < cityCount) {
+        const nextCity = selectNextCity(currentCity, visitedCities, distanceMatrix, pheromoneMap);
+        currentPath.push(nextCity);
+        visitedCities.add(nextCity);
+        currentCity = nextCity;
       }
 
-      path.push(path[0]);
-      const length = path.reduce((acc, _, i) =>
-        i < path.length - 1 ? acc + distances[path[i]][path[i + 1]] : acc, 0);
+      currentPath.push(currentPath[0]); // Замыкаем маршрут
 
-      if (length < bestLength) {
-        bestLength = length;
-        bestPath = path.slice();
+      // Считаем длину маршрута
+      const pathLength = currentPath.reduce((total, _, index) =>//Пока не дошли до последнего города, берём расстояние между текущим и следующим городом
+        index < currentPath.length - 1 ? total + distanceMatrix[currentPath[index]][currentPath[index + 1]] : total, 0);
+
+      // Обновляем лучший маршрут
+      if (pathLength < bestRouteLength) {
+        bestRouteLength = pathLength;
+        optimalRoute = currentPath.slice();
       }
 
-      paths.push(path);
-      lengths.push(length);
+      allPaths.push(currentPath); // Сохраняем маршрут муравья
+      allPathLengths.push(pathLength); // Сохраняем его длину
     }
 
-    for (let i = 0; i < n; i++) {
-      for (let j = 0; j < n; j++) {
-        pheromones[i][j] *= (1 - rho); 
+    // Испаряем феромоны
+    for (let fromCity = 0; fromCity < cityCount; fromCity++) {
+      for (let toCity = 0; toCity < cityCount; toCity++) {
+        pheromoneMap[fromCity][toCity] *= (1 - evaporationRate);
       }
     }
 
-    for (let k = 0; k < paths.length; k++) {
-      const path = paths[k];
-      const contrib = Q / lengths[k];
-      for (let i = 0; i < path.length - 1; i++) {
-        const a = path[i], b = path[i + 1];
-        pheromones[a][b] += contrib;
-        pheromones[b][a] += contrib;
+    // Обновляем феромоны по маршрутам муравьёв
+    for (let k = 0; k < allPaths.length; k++) {
+      const path = allPaths[k];
+      const pheromoneContribution = antPheromone / allPathLengths[k]; // Чем короче путь, тем больше феромонов
+      for (let step = 0; step < path.length - 1; step++) {
+        const fromCity = path[step], toCity = path[step + 1];
+        pheromoneMap[fromCity][toCity] += pheromoneContribution;
+        pheromoneMap[toCity][fromCity] += pheromoneContribution; // Для симметрии
       }
     }
 
-    if (iter % 10 === 0 || iter === iterations - 1) {
+    // Каждые 10 итераций или в конце рисуем лучший маршрут
+    if (iteration % 10 === 0 || iteration === maxIterations - 1) {
       [...svg.querySelectorAll("polyline")].forEach(el => el.remove());
-      drawGrayPathsExceptBest(bestPath);
-      drawPath(bestPath);
+      drawGrayPathsExceptBest(optimalRoute);
+      drawPath(optimalRoute);
     }
   }
-
-  if (!bestLengthText) {
-    bestLengthText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    bestLengthText.setAttribute("x", "10");
-    bestLengthText.setAttribute("y", "190");
-    bestLengthText.setAttribute("fill", "black");
-    bestLengthText.setAttribute("font-size", "10");
-    svg.appendChild(bestLengthText);
-  }
-  
 }
 
 function drawGrayPathsExceptBest(best) {
@@ -165,8 +168,8 @@ function drawGrayPathsExceptBest(best) {
 
 function clearGraph() {
   cities = [];
-  bestPath = [];
-  pheromones = [];
-  bestLengthText = null;
+  optimalRoute = [];
+  pheromoneMap = [];
+  routeLengthDisplay = null;
   [...svg.querySelectorAll("circle, polyline, text")].forEach(el => el.remove());
 }

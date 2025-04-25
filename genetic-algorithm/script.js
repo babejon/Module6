@@ -31,8 +31,6 @@ function setupGraph() {
         pointIndex.textContent = points.length - 1;
         svg.appendChild(pointIndex);
         pointIndex.setAttribute("class","label")
-
-
     });
 }
 
@@ -59,16 +57,6 @@ function generatePopulation(size, numPoints) {//Создает массив ма
     return population;
 }
 
-function tournamentSelection(population, points, k = 3) {//Турнирный метод выбора "Родителя"
-    let tournament = [];
-    for (let i = 0; i < k; i++) {
-        const randomIndex = Math.floor(Math.random() * population.length);
-        tournament.push(population[randomIndex]);
-    }
-
-    return getBestPath(tournament, points);
-}
-
 function shuffle(array) {//Функция которя используется в создании популяции, для того чтобы случайно переставлять точки
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -76,6 +64,14 @@ function shuffle(array) {//Функция которя используется 
     }
 }
 
+function tournamentSelection(population, points, k = 3) {//Турнирный метод выбора "Родителя"
+    let tournament = [];
+    for (let i = 0; i < k; i++) {
+        const randomIndex = Math.floor(Math.random() * population.length);
+        tournament.push(population[randomIndex]);
+    }
+    return getBestPath(tournament, points);
+}
 
 function crossover(p1, p2) {//Берет половину точек из одного "родителя", остальные добирает из остальных точек
     let cut = Math.floor(p1.length / 2);
@@ -92,6 +88,7 @@ function mutate(path) {
         let i = Math.floor(Math.random() * (mutated.length - 1));
         [mutated[i], mutated[i + 1]] = [mutated[i + 1], mutated[i]];
     }
+
     if(Math.random()<0.2)//С шансом 20% делаем одну случайную перестановку
     {
     let a = Math.floor(Math.random() * mutated.length);
@@ -114,34 +111,12 @@ function getBestPath(population, points) {//выбирает самый коро
     return best;
 }
 
-function drawPath(svg, points, path) {// рисует линии
-    let oldLine = document.getElementById("line");
-    if (oldLine) svg.removeChild(oldLine);
-
-    let line = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-    let str = "";
-    for (let i = 0; i < path.length; i++) {
-        let pt = points[path[i]];
-        str += pt.x + "," + pt.y + " ";
-    }
-
-    let first = points[path[0]];
-    str += first.x + "," + first.y;
-
-    line.setAttribute("points", str);
-    line.setAttribute("stroke", "red");
-    line.setAttribute("fill", "none");
-    line.setAttribute("stroke-width", 2);
-    line.setAttribute("id", "line");
-    svg.appendChild(line);
-}
-
 async function startAlgo() {
     let svg = document.getElementById("graphArea");
     let num = points.length;
-    let pop = generatePopulation(30, num);//создаем 50 популяций 
+    let pop = generatePopulation(30, num);//создаем 30 популяций 
 
-    for (let gen = 0; gen < 60; gen++) {//всего у нас новых генов 100
+    for (let gen = 0; gen < 60; gen++) {//всего у нас новых генов 60
         let newPop = [];
 
         const best = getBestPath(pop, points);
@@ -163,6 +138,28 @@ async function startAlgo() {
         document.getElementById("bestLength").textContent = length.toFixed(2);
         await new Promise(r => setTimeout(r, 50));
     }
+}
+
+function drawPath(svg, points, path) {// рисует линии
+    let oldLine = document.getElementById("line");
+    if (oldLine) svg.removeChild(oldLine);
+
+    let line = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+    let str = "";
+    for (let i = 0; i < path.length; i++) {
+        let pt = points[path[i]];
+        str += pt.x + "," + pt.y + " ";
+    }
+
+    let first = points[path[0]];
+    str += first.x + "," + first.y;
+
+    line.setAttribute("points", str);
+    line.setAttribute("stroke", "red");
+    line.setAttribute("fill", "none");
+    line.setAttribute("stroke-width", 2);
+    line.setAttribute("id", "line");
+    svg.appendChild(line);
 }
 
 function clearGraph() {
