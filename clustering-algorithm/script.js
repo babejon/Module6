@@ -12,17 +12,17 @@ svg.addEventListener("click", (event) => {
   const rect = svg.getBoundingClientRect();
   const viewBox = svg.viewBox.baseVal;
 
-  const clickX = (event.clientX - rect.left) / rect.width * viewBox.width;
+  const clickX = (event.clientX - rect.left) / rect.width * viewBox.width; 
   const clickY = (event.clientY - rect.top) / rect.height * viewBox.height;
 
-  points.push({ x: clickX, y: clickY }); // Добавляем точку
+  points.push({ x: clickX, y: clickY }); 
 
   const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   circle.setAttribute("cx", clickX);
   circle.setAttribute("cy", clickY);
   circle.setAttribute("r", 3);
   circle.setAttribute("class", "point");
-  svg.appendChild(circle); // Отображаем точку на графике
+  svg.appendChild(circle);
 });
 
 function clearGraph() {
@@ -30,13 +30,13 @@ function clearGraph() {
   clusters = []; 
   assignments = []; 
 
-  svg.querySelectorAll("circle").forEach(el => el.remove()); // Удаляем все круги
+  svg.querySelectorAll("circle").forEach(el => el.remove()); 
 }
 
 // Запуск алгоритма
 function startAlgo() {
   const kInput = document.getElementById("kValue");
-  k = parseInt(kInput.value); // Получаем значение k
+  k = parseInt(kInput.value); 
 
   if (isNaN(k) || k < 1 || k > 10) {
     alert("Введите корректное значение k (от 1 до 10)");
@@ -63,28 +63,28 @@ function initializeKMeansPlusPlus(points, k) {
   const centroids = []; // Массив центроидов
 
   const first = points[0]; 
-  centroids.push({ x: first.x, y: first.y }); // Добавляем первую точку как центроид
+  centroids.push({ x: first.x, y: first.y }); 
 
   while (centroids.length < k) {
-    const distances = points.map(p => { // Вычисляем расстояния до центроидов
+    const distances = points.map(p => { // Вычисляем квадрат расстояния от каждой точки до ближайшего центроида
       let minDist = Infinity;
       centroids.forEach(c => {
         const dist = Math.hypot(p.x - c.x, p.y - c.y);
         minDist = Math.min(minDist, dist);
       });
-      return minDist ** 2; // Возвращаем квадрат минимального расстояния
+      return minDist ** 2; 
     });
 
     const total = distances.reduce((sum, d) => sum + d, 0); // Суммируем расстояния
-    let r = Math.random() * total; // Генерируем случайное число (от до суммы расстояний)
+    let r = Math.random() * total; // Генерируем случайное число (от 0 до суммы расстояний)
     let index = 0;
 
-    while (r > distances[index]) { // Находим индекс нового центроида
+    while (r > distances[index]) { // Находим индекс нового центроида с помощью взвешенного случайного распределение
       r -= distances[index];
       index++;
     }
 
-    centroids.push({ x: points[index].x, y: points[index].y }); // Добавляем новый центроид
+    centroids.push({ x: points[index].x, y: points[index].y }); 
   }
 
   return centroids; // Возвращаем центроиды
@@ -95,7 +95,7 @@ function stepKMeans() {
   const maxIterations = 20; // Максимальное количество итераций
 
   for (let iter = 0; iter < maxIterations; iter++) {
-    let changed = false; // Флаг изменения
+    let changed = false; 
 
     const newAssignments = points.map(p => {
       let minDist = Infinity;
@@ -114,7 +114,7 @@ function stepKMeans() {
 
     for (let i = 0; i < points.length; i++) {
       if (assignments[i] !== newAssignments[i]) {
-        changed = true; // Если есть изменения, устанавливаем флаг
+        changed = true; 
         break;
       }
     }
@@ -124,19 +124,19 @@ function stepKMeans() {
     // Пересчет центров кластеров
     for (let i = 0; i < k; i++) {
       const clusterPoints = points.filter((_, idx) => assignments[idx] === i); // Фильтруем точки по кластеру
-      if (clusterPoints.length === 0) continue; // Пропускаем пустые кластеры
+      if (clusterPoints.length === 0) continue; 
 
-      const avgX = clusterPoints.reduce((sum, p) => sum + p.x, 0) / clusterPoints.length; // Среднее по X
-      const avgY = clusterPoints.reduce((sum, p) => sum + p.y, 0) / clusterPoints.length; // Среднее по Y
+      const avgX = clusterPoints.reduce((sum, p) => sum + p.x, 0) / clusterPoints.length; 
+      const avgY = clusterPoints.reduce((sum, p) => sum + p.y, 0) / clusterPoints.length; 
 
-      clusters[i].x = avgX; // Обновляем центр кластера
+      clusters[i].x = avgX; 
       clusters[i].y = avgY;
     }
 
-    if (!changed) break; // Если изменений нет, выходим из цикла
+    if (!changed) break; 
   }
 
-  drawClusters(); // Отрисовка кластеров
+  drawClusters(); 
 }
 
 // Отрисовка кластеров и точек
@@ -152,7 +152,7 @@ function drawClusters() {
     point.setAttribute("r", 3);
     point.setAttribute("fill", c?.color || "gray"); // Цвет точки
     point.setAttribute("stroke", "black");
-    svg.appendChild(point); // Отображаем точку
+    svg.appendChild(point); 
   });
 
   // Центры кластеров
@@ -164,6 +164,6 @@ function drawClusters() {
     center.setAttribute("fill", c.color); // Цвет центра
     center.setAttribute("stroke", "black");
     center.setAttribute("stroke-width", "2");
-    svg.appendChild(center); // Отображаем центр кластера
+    svg.appendChild(center); 
   });
 }

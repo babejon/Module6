@@ -17,7 +17,7 @@ function countLabels(data) {
     }, {});
 }
 
-// Функция для вычисления энтропии
+// Функция для вычисления энтропии по Шеннону
 function entropy(data) {
     const total = data.length;
     const counts = countLabels(data);
@@ -42,17 +42,17 @@ function bestFeature(data, features) {
         for (const item of data) { // Разделяем данные по значению признака
             const val = item.features[feature];
             if (!subsets[val]) subsets[val] = [];
-            subsets[val].push(item); // Разделяем данные по признаку
+            subsets[val].push(item); 
         }
 
         const weightedEntropy = Object.values(subsets).reduce((acc, subset) => {
-            return acc + (subset.length / data.length) * entropy(subset); // Вычисляем взвешенную энтропию
+            return acc + (subset.length / data.length) * entropy(subset); // Вычисляем взвешенную энтропию (доля всех данных * энтропия этого подмножества)
         }, 0);
 
         const gain = baseEntropy - weightedEntropy;  // Прирост информации
         if (gain > bestGain) { // Если прирост лучше, обновляем
             bestGain = gain;
-            bestFeature = feature; // Обновляем лучший признак
+            bestFeature = feature; 
         }
     }
 
@@ -63,21 +63,21 @@ function bestFeature(data, features) {
 function buildTree(data, features) {
     const labels = [...new Set(data.map(d => d.label))]; // Уникальные метки
 
-    if (labels.length === 1) return { type: 'leaf', label: labels[0] }; // Лист
-    if (features.length === 0) {
-        const labelCounts = countLabels(data); // Подсчет меток
-        const majorityLabel = Object.entries(labelCounts).sort((a, b) => b[1] - a[1])[0][0];
-        return { type: 'leaf', label: majorityLabel }; // Метка большинства
+    if (labels.length === 1) return { type: 'leaf', label: labels[0] };                     // Если все метки одинаковые — возвращаем лист
+    if (features.length === 0) {                                                                // Если не осталось признаков
+        const labelCounts = countLabels(data);                                                  // Подсчитываем количество каждой метки
+        const majorityLabel = Object.entries(labelCounts).sort((a, b) => b[1] - a[1])[0][0];    // Находим метку большинства
+        return { type: 'leaf', label: majorityLabel };                                          // Возвращаем лист с меткой большинства
     }
 
-    const best = bestFeature(data, features);
-    const tree = { type: 'node', feature: best, children: {} };
+    const best = bestFeature(data, features);                                                    // Выбираем лучший признак для разделения
+    const tree = { type: 'node', feature: best, children: {} };                                  // Создаем узел дерева
 
-    const uniqueValues = [...new Set(data.map(d => d.features[best]))];
-    for (const value of uniqueValues) {
-        const subset = data.filter(d => d.features[best] === value);
-        const remaining = features.filter(f => f !== best);
-        tree.children[value] = buildTree(subset, remaining); // Рекурсивное построение
+    const uniqueValues = [...new Set(data.map(d => d.features[best]))];                          // Уникальные значения лучшего признака
+    for (const value of uniqueValues) {                                                          // Для каждого значения признака
+        const subset = data.filter(d => d.features[best] === value);                             // Фильтруем подмножество данных
+        const remaining = features.filter(f => f !== best);                                      // Исключаем использованный признак
+        tree.children[value] = buildTree(subset, remaining);                                     // Рекурсивно строим поддерево
     }
 
     return tree; // Возвращаем дерево
@@ -85,8 +85,8 @@ function buildTree(data, features) {
 
 // Функция для прогнозирования на основе дерева
 function predict(tree, input, path = []) {
-    if (tree.type === 'leaf') {
-        path.push(`Решение: ${tree.label}`); // Если это лист, добавляем решение
+    if (tree.type === 'leaf') {               // Если это лист, добавляем решение
+        path.push(`Решение: ${tree.label}`);
         return { label: tree.label, path }; // Возвращаем метку и путь
     }
 
@@ -105,7 +105,7 @@ function renderTreeVisual(tree, container, depth = 0) {
 
     const node = document.createElement('div');
     node.className = 'tree-node';
-    node.style.marginLeft = `${depth * 40}px`;
+    node.style.marginLeft = `${depth * 40}px`;   // Отступ относительно вложенности
 
     if (tree.type === 'leaf') {
         node.innerHTML = `<div class="leaf-node">→ ${tree.label}</div>`; // Лист
